@@ -1,7 +1,23 @@
 <template>
   <div class="hello">
     <p style="font-size:30px;margin-top:0;">雪情论坛</p>
-    forum
+    <div>
+        <el-card class="box-card" shadow="never" style="color:#777777;" v-for="snow in snows" :key="snow.snowId">
+            <el-row>
+                <el-col :span="20" style="color:#336699;font-size:20px;">
+                    {{snow.title}}
+                </el-col>
+                <el-col :span="4">{{snow.time}}</el-col>
+            </el-row><br>
+            <i class="el-icon-s-custom"></i>{{snow.author}}
+        </el-card><br>
+        <el-pagination
+        style="text-align:right;"
+        background
+        layout="prev, pager, next"
+        :total="1000">
+        </el-pagination>
+    </div>
   </div>
 </template>
 
@@ -10,26 +26,36 @@ export default {
   name: 'Forum',
   data () {
     return {
-      tableData: [{
-        "userId": "123",
-        "userName":"贺妍",
-        "vote": 23
+      snows: [
+      {
+        "snowId": 123,
+        "title": "和兴路重大雪灾",
+        "content": "严重严重严重",
+        "time": "2019/4/4 9:00:23",
+        "author": "贺妍",
       },
       {
-        "userId": "321",
-        "userName":"小李",
-        "vote": 22
+        "snowId": 123,
+        "title": "和兴路重大雪灾",
+        "content": "严重严重严重",
+        "time": "2019/4/4 9:00:23",
+        "author": "贺妍",
       },
       {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
+        "snowId": 123,
+        "title": "和兴路重大雪灾",
+        "content": "严重严重严重",
+        "time": "2019/4/4 9:00:23",
+        "author": "贺妍",
       },
       {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      }]
+        "snowId": 123,
+        "title": "和兴路重大雪灾",
+        "content": "严重严重严重",
+        "time": "2019/4/4 9:00:23",
+        "author": "贺妍",
+      }
+    ]
     }
   },
   methods:{
@@ -44,7 +70,10 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
+.el-card.box-card.is-never-shadow:hover {
+    background-color: #eeeeee;
+}
 .warning-row {
     background-color: oldlace !important;
   }

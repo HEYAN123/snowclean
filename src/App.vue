@@ -8,7 +8,7 @@
           <el-col :span="2" class="username" @click.native="logout"><i class="el-icon-remove"></i>退出</el-col>
         </el-row>
       </el-header>
-      <el-main>
+      <el-main style="min-height: 700px;background-color:#fff;">
         <el-row>
           <el-col :span="4" style="padding-right:20px;">
             <el-menu
