@@ -10,7 +10,7 @@
       </el-header>
       <el-main>
         <el-row>
-          <el-col :span="4">
+          <el-col :span="4" style="padding-right:20px;">
             <el-menu
               default-active="2"
               class="el-menu-vertical-demo"
@@ -23,7 +23,7 @@
                 <i class="el-icon-setting"></i>
                 <span slot="title">绩效墙</span>
               </el-menu-item>
-              <el-menu-item index="3" disabled>
+              <el-menu-item index="forum">
                 <i class="el-icon-document"></i>
                 <span slot="title">雪情论坛</span>
               </el-menu-item>

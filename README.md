@@ -321,7 +321,7 @@
 - GET /snow/work
 
 - return :
-- 按score由大到小排序返回
+- 按score由大到小排序返回,前百分之30‘reward’字段为“有奖金”，其余为空或者不传
 
 ```json
 {
@@ -331,12 +331,14 @@
       {
         "userId": "123",
         "userName":"贺妍",
-        "score": 23
+        "score": 23,
+        "reward": "有奖金"
       },
       {
         "userId": "321",
         "userName":"小李",
-        "score": 22
+        "score": 22,
+        "reward": "有奖金"
       },
       {
         "userId": "222",
