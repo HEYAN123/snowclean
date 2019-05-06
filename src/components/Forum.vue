@@ -4,7 +4,7 @@
     <div>
         <el-card class="box-card" shadow="never" style="color:#777777;" v-for="snow in snows" :key="snow.snowId">
             <el-row>
-                <el-col :span="20" style="color:#336699;font-size:20px;">
+                <el-col :span="20" style="color:#409EFF;font-size:20px;">
                     {{snow.title}}
                 </el-col>
                 <el-col :span="4">{{snow.time}}</el-col>

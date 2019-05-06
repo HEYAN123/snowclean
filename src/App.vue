@@ -15,6 +15,18 @@
               default-active="2"
               class="el-menu-vertical-demo"
               :router="true">
+              <el-menu-item index="staff">
+                <i class="el-icon-menu"></i>
+                <span slot="title">员工中心</span>
+              </el-menu-item>
+              <el-menu-item index="leader">
+                <i class="el-icon-menu"></i>
+                <span slot="title">组长中心</span>
+              </el-menu-item>
+              <el-menu-item index="manager">
+                <i class="el-icon-menu"></i>
+                <span slot="title">管理中心</span>
+              </el-menu-item>
               <el-menu-item index="honor">
                 <i class="el-icon-menu"></i>
                 <span slot="title">荣誉墙</span>
