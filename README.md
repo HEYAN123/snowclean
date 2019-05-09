@@ -14,6 +14,7 @@
     - [1.3.2 查看雪情内容](#132-查看雪情内容)
     - [1.3.3 发表雪情](#133-发表雪情)
     - [1.3.4 发表评论](#134-发表评论)
+    - [1.3.5 获取评论](#135-获取评论)
   - [1.4. 绩效考察](#14-绩效考察)
     - [1.4.1 获取绩效列表](#141-获取绩效列表)
   - [1.5. 员工端](#15-员工端)
@@ -234,34 +235,7 @@
     "title": "重大事件",
     "content" : "严重严重严重",
     "time" : "2019/4/4 12:00:00",
-    "author": "贺妍",
-    "comments": {
-      "commentList": [
-        {
-          "commentId": "123",
-          "content": "已上报",
-          "time" : "2019/4/4 12:00:00",
-          "author": "小李"
-        },
-        {
-          "commentId": "123",
-          "content": "已上报",
-          "time" : "2019/4/4 12:00:00",
-          "author": "小李"
-        },
-        {
-          "commentId": "123",
-          "content": "已上报",
-          "time" : "2019/4/4 12:00:00",
-          "author": "小李"
-        },
-      ],
-      "page":{
-        "totalSize": 25,
-        "totalPage": 10,
-        "eachPage": 5,
-        "nowPage": 1
-      }
+    "author": "贺妍"
     }
   }
 }
@@ -310,6 +284,48 @@
 ```json
 {
     "code": 0
+}
+```
+
+---
+
+### 1.3.5 获取评论
+
+- GET /snow/comments?snowId=&page=
+
+- return:
+
+```json
+{
+  "code": 0,
+  "data": {
+      "commentList": [
+        {
+          "commentId": "123",
+          "content": "已上报",
+          "time" : "2019/4/4 12:00:00",
+          "author": "小李"
+        },
+        {
+          "commentId": "123",
+          "content": "已上报",
+          "time" : "2019/4/4 12:00:00",
+          "author": "小李"
+        },
+        {
+          "commentId": "123",
+          "content": "已上报",
+          "time" : "2019/4/4 12:00:00",
+          "author": "小李"
+        },
+      ],
+    "page":{
+      "totalSize": 25,
+      "totalPage": 10,
+      "eachPage": 5,
+      "nowPage": 1
+    }
+  }
 }
 ```
 

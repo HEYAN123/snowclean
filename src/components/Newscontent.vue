@@ -1,32 +1,37 @@
 <template>
   <div class="hello">
-    <p style="font-size:30px;margin-top:0;">雪情论坛</p>
-    <div>
-        <el-card class="box-card" shadow="never" style="color:#777777;" v-for="snow in snows" :key="snow.snowId" >
-            <el-row>
-                <el-col :span="20" style="color:#409EFF;font-size:20px;">
-                    <router-link :to="'/newscontent/'+snow.snowId">{{snow.title}}</router-link>
-                </el-col>
-                <el-col :span="4">{{snow.time}}</el-col>
-            </el-row><br>
-            <i class="el-icon-s-custom"></i>{{snow.author}}
-        </el-card>
-        <p style="text-align:left;"><el-button size="small" type="primary">发表</el-button></p>
-        <el-pagination
+    <p style="font-size:30px;margin-top:0;margin-bottom:0;">帖子详情</p>
+    <p style="color: #666666;">2018/10/19 贺妍</p>
+    <el-divider></el-divider>
+    <div v-html="content" style="word-wrap:break-word;"></div>
+    <br><br>
+    <p style="text-align:right;"><el-button size="small" type="primary">评论</el-button></p>
+    <el-divider></el-divider>
+    <el-card class="box-card" shadow="never" style="color:#777777;" v-for="snow in snows" :key="snow.snowId" >
+        <p><i class="el-icon-s-custom"></i>{{`${snow.author} ${snow.time}`}}</p>
+        <el-row>
+            <el-col :span="20" style="color:#333333;">
+                {{snow.title}}
+            </el-col>
+            <el-col :span="4"></el-col>
+        </el-row><br>
+    </el-card>
+    <br>
+    <el-pagination
         style="text-align:right;"
         background
         layout="prev, pager, next"
         :total="1000">
         </el-pagination>
-    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Forum',
+  name: 'Newscontent',
   data () {
     return {
+      content:"<h1>hell0000098765456789098765457654345678987654567890987654567890678998765456789098765456789098765456789o</h1>哈哈哈哈哈哈哈哈哈哈哈",
       snows: [
       {
         "snowId": 123,
@@ -36,21 +41,21 @@ export default {
         "author": "贺妍",
       },
       {
-        "snowId": 321,
+        "snowId": 123,
         "title": "和兴路重大雪灾",
         "content": "严重严重严重",
         "time": "2019/4/4 9:00:23",
         "author": "贺妍",
       },
       {
-        "snowId": 2,
+        "snowId": 123,
         "title": "和兴路重大雪灾",
         "content": "严重严重严重",
         "time": "2019/4/4 9:00:23",
         "author": "贺妍",
       },
       {
-        "snowId": 3,
+        "snowId": 123,
         "title": "和兴路重大雪灾",
         "content": "严重严重严重",
         "time": "2019/4/4 9:00:23",
@@ -66,22 +71,13 @@ export default {
         } 
         return '';
       },
-      newsHandle(index) {
-          console.log(index);
-      }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.el-card.box-card.is-never-shadow:hover {
-    background-color: #eeeeee;
-}
 .warning-row {
     background-color: oldlace !important;
   }
-a {
-    text-decoration: none;
-}
 </style>
