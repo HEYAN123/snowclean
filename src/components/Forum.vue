@@ -11,7 +11,7 @@
             </el-row><br>
             <i class="el-icon-s-custom"></i>{{snow.author}}
         </el-card>
-        <p style="text-align:left;"><el-button size="small" type="primary">发表</el-button></p>
+        <p style="text-align:left;"><el-button size="small" type="primary" @click="publishHandle">发表</el-button></p>
         <el-pagination
         style="text-align:right;"
         background
@@ -68,6 +68,11 @@ export default {
       },
       newsHandle(index) {
           console.log(index);
+      },
+      publishHandle() {
+          this.$router.push({
+              path: `/newseditor`
+          });
       }
   }
 }

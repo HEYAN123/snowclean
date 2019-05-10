@@ -4,8 +4,7 @@
     <p style="color: #666666;">2018/10/19 贺妍</p>
     <el-divider></el-divider>
     <div v-html="content" style="word-wrap:break-word;"></div>
-    <br><br>
-    <p style="text-align:right;"><el-button size="small" type="primary">评论</el-button></p>
+    <br>
     <el-divider></el-divider>
     <el-card class="box-card" shadow="never" style="color:#777777;" v-for="snow in snows" :key="snow.snowId" >
         <p><i class="el-icon-s-custom"></i>{{`${snow.author} ${snow.time}`}}</p>
@@ -18,11 +17,20 @@
     </el-card>
     <br>
     <el-pagination
-        style="text-align:right;"
-        background
-        layout="prev, pager, next"
-        :total="1000">
-        </el-pagination>
+    style="text-align:right;"
+    background
+    layout="prev, pager, next"
+    :total="1000">
+    </el-pagination>
+    <br>
+    <quill-editor
+    v-model="comment" 
+    ref="myQuillEditor" 
+    :options="editorOption" 
+    @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
+    @change="onEditorChange($event)">
+    </quill-editor>
+    <p style="text-align:right;"><el-button size="small" type="primary">评论</el-button></p>
   </div>
 </template>
 
@@ -31,6 +39,14 @@ export default {
   name: 'Newscontent',
   data () {
     return {
+      editorOption:{
+        modules:{
+            toolbar:[
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                ['blockquote', 'code-block']
+            ]
+        }
+      },
       content:"<h1>hell0000098765456789098765457654345678987654567890987654567890678998765456789098765456789098765456789o</h1>哈哈哈哈哈哈哈哈哈哈哈",
       snows: [
       {

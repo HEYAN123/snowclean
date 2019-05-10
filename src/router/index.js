@@ -9,7 +9,7 @@ import Leader from '@/components/Leader'
 import Manager from '@/components/Manager'
 import Forum from '@/components/Forum'
 import NewsContent from '@/components/Newscontent'
-
+import Newseditor from '@/components/Newseditor'
 
 Vue.use(Router)
 
@@ -54,6 +54,11 @@ export default new Router({
       path: '/newscontent/:id',
       name: 'Newscontent',
       component: NewsContent
+    },
+    {
+      path: '/newseditor',
+      name: 'Newseditor',
+      component: Newseditor
     },
   ]
 })

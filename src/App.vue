@@ -14,7 +14,7 @@
             <el-menu
               default-active="2"
               class="el-menu-vertical-demo"
-              :router="true">
+              @select="handleSelect">
               <el-menu-item index="staff">
                 <i class="el-icon-menu"></i>
                 <span slot="title">员工中心</span>
@@ -66,6 +66,11 @@ export default {
       this.Cookies.remove('type');
       this.$router.push({
           path: '/'
+      })
+    },
+    handleSelect(key) {
+      this.$router.push({
+        path: `/${key}`
       })
     }
   }
