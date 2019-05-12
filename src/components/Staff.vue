@@ -16,7 +16,7 @@
     </p>
     <br>
     <el-divider content-position="left">内部活动</el-divider>
-    
+    暂未开放
   </div>
 </template>
 

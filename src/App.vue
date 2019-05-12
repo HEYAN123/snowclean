@@ -4,26 +4,26 @@
       <el-header>
         <el-row>
           <el-col :span="12" class="sysname">扫雪工作管理系统</el-col>
-          <el-col :span="10" class="username">欢迎，贺妍</el-col>
-          <el-col :span="2" class="username" @click.native="logout"><i class="el-icon-remove"></i>退出</el-col>
+          <el-col :span="10" class="username" v-if="login">欢迎，贺妍</el-col>
+          <el-col :span="2" class="username" @click.native="logout" v-if="login"><i class="el-icon-remove"></i>退出</el-col>
         </el-row>
       </el-header>
       <el-main style="min-height: 700px;background-color:#fff;">
         <el-row>
-          <el-col :span="4" style="padding-right:20px;">
+          <el-col :span="4" style="padding-right:20px;" v-if="login">
             <el-menu
               default-active="2"
               class="el-menu-vertical-demo"
               @select="handleSelect">
-              <el-menu-item index="staff">
+              <el-menu-item index="staff" v-if="identify==='A'">
                 <i class="el-icon-menu"></i>
                 <span slot="title">员工中心</span>
               </el-menu-item>
-              <el-menu-item index="leader">
+              <el-menu-item index="leader" v-if="identify==='B'">
                 <i class="el-icon-menu"></i>
                 <span slot="title">组长中心</span>
               </el-menu-item>
-              <el-menu-item index="manager">
+              <el-menu-item index="manager" v-if="identify==='C'">
                 <i class="el-icon-menu"></i>
                 <span slot="title">管理中心</span>
               </el-menu-item>
@@ -41,7 +41,7 @@
               </el-menu-item>
             </el-menu>
           </el-col>
-          <el-col :span="20">
+          <el-col :span="login?20:24">
             <router-view/>
           </el-col>
         </el-row>
@@ -55,7 +55,8 @@ export default {
   name: 'App',
   data() {
     return {
-
+      login: true,
+      identify: "C"
     }
   },
   methods: {
