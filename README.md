@@ -270,6 +270,7 @@
 ```json
 {
     "userId": "1322132432",
+    "snowId" : "1",  加了这个
     "content": "hhhhhhhhhhhhhhh"
 }
 ```
@@ -380,7 +381,7 @@
 {
   "name": "tony",
   "sex": "男",
-  "id": "123454199809160023",
+  "userId": "123454199809160023",  id改为userId
   "workAge": "两年",
   "address": "和兴路26号",
   "password": "123456"
@@ -400,7 +401,7 @@
 
 #### 1.5.2.1 工作打卡
 
-- GET /snow/clock?state=0
+- GET /snow/clock?state=0&userId=160023    此处加一个userId=？
 - state : 0 = 开始工作（切换为工作中状态） | 1 = 结束工作（切换为待工作状态） | -1 = 请假
 
 - return:
@@ -415,7 +416,7 @@
 
 #### 1.5.2.2 获取当前工作状态
 
-- GET /snow/clock
+- GET /snow/clock/status/{userId}  此处加一个userId
 
 - return: 
 - 0 = 工作中 | 1 = 待工作 | -1 = 请假
@@ -499,12 +500,89 @@
 
     - [1.6.4 更新组员工作进度](#164-更新组员工作进度)
   get /snow/progress?userId=123&num=20    123号员工进度更新为20%
+```json
+return
+{
+  "code": 0
+}
+```
 
     - [1.6.5 显示系统记录](#165-显示系统记录)
     get /snow/progress/{teamId}   返回组长端的组员表那些字段（数组）还有该组的平均进度（区别于数组的新属性，别也塞到数组里）
-    - [1.6.6 对组员打分](#166-对组员打分)
+    ```json
+{
+        "code": 0,
+            "data": [
+        {
+            "systemId": 1,
+                "userToken": "fbdb045408c84b3e90c57c40b8d76c2b",
+                "userType": "A",
+                "userVoteNum": 0,
+                "cstate": 1,
+                "userScore": 6,
+                "userReward": null,
+                "userStartTime": 1557742697751,
+                "userEndTime": 1557752881973,
+                "userWorkTime": "2小时49分",
+                "userTask": null,
+                "userTeamId": null,
+                "userTaskTime": "2019-05-14T03:43:06.000+0000",
+                "num": 20,
+                "astate": 0,
+                "userId": "160023",
+                "name": "tony",
+                "password": "123456",
+                "vstate": 1,
+                "workAge": "两年",
+                "address": "和兴路23号",
+                "sex": "男"
+        },
+        {
+            "systemId": 2,
+                "userToken": "a378303acef143a3b9483d7f59ca5e9f",
+                "userType": "A",
+                "userVoteNum": 1,
+                "cstate": 1,
+                "userScore": 5,
+                "userReward": null,
+                "userStartTime": 0,
+                "userEndTime": 0,
+                "userWorkTime": "0",
+                "userTask": null,
+                "userTeamId": null,
+                "userTaskTime": "2019-05-14T03:43:07.000+0000",
+                "num": 0,
+                "astate": 0,
+                "userId": "160024",
+                "name": "贺妍",
+                "password": "123456",
+                "vstate": 0,
+                "workAge": "一年",
+                "address": "和兴路24号",
+                "sex": "女"
+        }
+    ],
+        "averageProgress": 2
+    }
+```
+
+- [1.6.6 对组员打分](#166-对组员打分)
       打分之前需要获取一下系统有没有开放  get /snow/performSysState   0未开放，1开放了
-      打分： get /snow/perform/userId=123&score=22  给123号组员打分22
+```json
+{
+    
+"state": 0
+
+}
+```
+      打分： get /snow/perform?userId=123&score=22  给123号组员打分22
+```json
+{
+    
+"code": 0
+
+}
+```
     - [1.6.7 分配组员任务](#167-分配组员任务)
     post /snow/task/
 - payload:
@@ -515,45 +593,272 @@
     "userTask": "非常紧急，请在三日内完成",  后台生成时间存进去
 }
 ```
+```json
+{
+    
+"code": 0
+
+}
+```
     - [1.6.9 更新工具状态](#169-更新工具状态)
-    先获取 get /snow/tools 返回工具表，多一个名字的字段 工具名字 name
-      更新 get /snow/tools?toolId=123&state=使用中
+    先获取 get /snow/select/tools 返回工具表，多一个名字的字段 工具名字 name
+```json
+{
+        "code": 0,
+            "data": [
+        {
+            "toolId": 1,
+                "toolName": "a",
+                "state": "使用中",
+                "teamId": "1"
+        },
+        {
+            "toolId": 2,
+                "toolName": "b",
+                "state": "使用中",
+                "teamId": "1"
+        },
+        {
+            "toolId": 3,
+                "toolName": "c",
+                "state": "使用中",
+                "teamId": "2"
+        }
+    ]
+    }
+```
+
+      更新 get /snow/update/tools?toolId=123&state=使用中
+
+```json
+{
+"code":0
+}
+```
     - [1.6.11 更新车辆状态](#1611-更新车辆状态)
-    先获取 get /snow/cars 返回车辆表
-      更新 get /snow/cars?carId=123&state=使用中
+    先获取 get /snow/select/cars 返回车辆表
+```json
+{
+        "code": 0,
+            "data": [
+        {
+            "carId": 1,
+                "state": "使用中",
+                "num": "0",
+                "teamId": "1"
+        },
+        {
+            "carId": 2,
+                "state": "使用中",
+                "num": "0",
+                "teamId": "1"
+        },
+        {
+            "carId": 3,
+                "state": "使用中",
+                "num": "0",
+                "teamId": "2"
+        }
+    ]
+    }
+```
+
+      更新 get /snow/update/cars?carId=123&state=使用中
+
+```json
+{
+"code":0
+}
+```
   - [1.7. 审批端](#17-审批端)
     - [1.7.1 查看列表](#171-查看列表)
       - [1.7.1.1 获取员工列表](#1711-获取员工列表)
+```json
+{
+        "code": 0,
+            "data": [
+        
+        {
+            "systemId": 2,
+                "userToken": "a378303acef143a3b9483d7f59ca5e9f",
+                "userType": "A",
+                "userVoteNum": 1,
+                "cstate": 1,
+                "userScore": 0,
+                "userReward": null,
+                "userStartTime": 0,
+                "userEndTime": 0,
+                "userWorkTime": "0",
+                "userTask": null,
+                "userTeamId": null,
+                "userTaskTime": "2019-05-13T15:01:33.000+0000",
+                "num": 0,
+                "astate": 0,
+                "userId": "160024",
+                "name": "贺妍",
+                "password": "123456",
+                "vstate": 0,
+                "workAge": "一年",
+                "address": "和兴路24号",
+                "sex": "女"
+        },
+        {
+            "systemId": 5,
+                "userToken": "6dbe06dcb5d74126af995fb0fbd88dab",
+                "userType": "A",
+                "userVoteNum": 0,
+                "cstate": 1,
+                "userScore": 0,
+                "userReward": null,
+                "userStartTime": 0,
+                "userEndTime": 0,
+                "userWorkTime": "0",
+                "userTask": null,
+                "userTeamId": null,
+                "userTaskTime": "2019-05-14T03:54:13.000+0000",
+                "num": 0,
+                "astate": 0,
+                "userId": "160027",
+                "name": "小孟",
+                "password": "123456",
+                "vstate": 0,
+                "workAge": "一年",
+                "address": "和兴路27号",
+                "sex": "男"
+        }
+    ]
+    }
+```
+
+
       - [1.7.1.2 获取小组列表](#1712-获取小组列表)
+```json
+ {
+        "code": 0,
+            "data": [
+        {
+            "systemId": null,
+                "teamId": "1",
+                "teamName": "a",
+                "score": null,
+                "astate": null,
+                "applyContent": null,
+                "password": null,
+                "taskTitle": null,
+                "taskContent": null,
+                "publishTime": null
+        }
+    ]
+    }
+```
+
+
       - [1.7.1.3 获取车辆列表](#1712-获取车辆列表)
+ --- GET : /snow/select/cars
+
+```json
+在上面
+
+```
+
+
       - [1.7.1.4 获取工具列表](#1714-获取工具列表)
+---  get  : /snow/select/tools
+```json
+在上面
+```
+
       - [1.7.1.5 获取申请列表](#1715-获取申请列表)
       多一个申请状态state，表示该申请的处理结果  1表示调配完成，0表示未处理
+
+---GET　/snow/applications
+
+```json
+{
+        "code": 0,
+            "data": {
+        "teamId": "1",
+                "teamName": "a",
+                "state": 0
+    }
+    }
+```
+
+
     - [1.7.2 新增](#172-新增)
       - [1.7.2.1 新增工具](#1721-新增工具)
-      post /snow/tools   name   
+      post /snow/tools  
+｀｀｀ｊｓｏｎ
+｛
+＂ｔｏｏｌＮａｍｅ＂　：＂ａａａ＂
+｝
+｀｀｀
+－－－ｒｅｔｕｒｎ　
+｀｀｀ｊｓｏｎ
+｛
+＂ｃｏｄｅ＂　：　０
+｝
+｀｀｀
+
       - [1.7.2.2 新增车辆](#1722-新增车辆)
-      post /snow/cars   carNum 车牌号
+      post /snow/cars   ｎum 车牌号
+｀｀｀ｊｓｏｎ
+｛
+＂ｎｕｍ＂　：＂ａａａ＂
+｝
+｀｀｀
+－－－ｒｅｔｕｒｎ　
+｀｀｀ｊｓｏｎ
+｛
+＂ｃｏｄｅ＂　：　０
+｝
+｀｀｀
+ｐｕｔ　请求　　：ｘ－ｗｗｗ－ｆｏｒｍ－ｕｒｌｅｎｃｏｄｅｄ
     - [1.7.3 调配](#173-调配)
       - [1.7.3.1 调配员工](#1731-调配员工)
-      put /snow/changeTeam  userId=123&teamId=333
+      put /snow/changeTeam?userId=160023&teamId=5
       - [1.7.3.2 调配车辆](#1732-调配车辆)
-      put /snow/cars  carId=123&teamId=333
+      put http://localhost:8080/snow/changeCars?carId=1&teamId=5
       - [1.7.3.3 调配工具](#1733-调配工具)
-      put /snow/tools  toolId=123&teamId=333
+      put/snow/changeTools?toolId=1&teamId=5
       - [1.7.3.4 调配任务](#1734-调配任务)
       post /snow/teamTask
       teamId: 123
       content: xxxxxxx
     - [1.7.4 处理申请](#174-处理申请)
      get /snow/apply?teamId=123&apply=1  1表示调配完成 -1表示忽略，从数据库中删除该条记录
+－－－上面４个正确返回
+｀｀｀ｊｓｏｎ
+｛
+＂ｃｏｄｅ＂：０
+｝
     - [1.7.5 管理打分系统](#175-管理打分系统)
     先获取  get /snow/performSysState 0未开放 1开放
-    put /snow/performSysState  state=1
+－－－ｒｅｔｕｒｎ　
+｀｀｀ｊｓｏｎ
+｛
+＂ｓｔａｔｅ＂：０
+｝
+｀｀｀
+
+－－－
+put 　　　/snow/managePerformState?state=1
+
     - [1.7.6 对小组打分](#176-对小组打分)
+打分之前需要获取一下系统有没有开放  get /snow/performSysState   0未开放，1开放了
+－－－ｒｅｔｕｒｎ　
+｀｀｀ｊｓｏｎ
+｛
+＂ｓｔａｔｅ＂：０
+｝
+｀｀｀
+
+  打分： get　/snow/perform/team?teamId=1&score=22 　， 给123组打分22
+
     - [1.7.7 管理投票系统](#177-管理投票系统)
     先获取  get /snow/voteSysState 0未开放 1开放
-    put /snow/voteSysState  state=1
+
+    put 　，/snow/manageVoteState?state=1
 
 
 
