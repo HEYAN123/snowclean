@@ -1,4 +1,4 @@
-# 1. 扫雪工作管理系统
+﻿# 1. 扫雪工作管理系统
 
 <!-- TOC -->
 
@@ -506,8 +506,15 @@
       打分之前需要获取一下系统有没有开放  get /snow/performSysState   0未开放，1开放了
       打分： get /snow/perform/userId=123&score=22  给123号组员打分22
     - [1.6.7 分配组员任务](#167-分配组员任务)
-    post /snow/task/{userId}   
-     "content": "非常紧急，请在三日内完成",  后台生成时间存进去
+    post /snow/task/
+- payload:
+
+```json
+{
+    "userId": "160023",
+    "userTask": "非常紧急，请在三日内完成",  后台生成时间存进去
+}
+```
     - [1.6.9 更新工具状态](#169-更新工具状态)
     先获取 get /snow/tools 返回工具表，多一个名字的字段 工具名字 name
       更新 get /snow/tools?toolId=123&state=使用中
