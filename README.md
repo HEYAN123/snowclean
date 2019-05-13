@@ -484,10 +484,21 @@
 }
 ```
 
-  - [1.6. 组长端](#16-组长端)
-    - [1.6.1 查询任务](#161-查询任务)
-    - [1.6.3 借调](#163-借调)
+- [1.6. 组长端](#16-组长端)
+  - [1.6.1 查询任务](#161-查询任务)
+  
+  
+  - [1.6.3 借调](#163-借调)
         post /snow/needs
+- payload
+```json
+{
+  "teamId" : 1,
+  "applyContent" : "五个扫帚"
+}
+```
+
+- return
 ```json
 {
   "code": 0,
@@ -498,18 +509,22 @@
 }
 ```
 
-    - [1.6.4 更新组员工作进度](#164-更新组员工作进度)
-  get /snow/progress?userId=123&num=20    123号员工进度更新为20%
+- [1.6.4 更新组员工作进度](#164-更新组员工作进度)
+
+
+- GET /snow/progress?userId=123&num=20    123号员工进度更新为20%
+- return  
 ```json
-return
 {
   "code": 0
 }
 ```
 
-    - [1.6.5 显示系统记录](#165-显示系统记录)
-    get /snow/progress/{teamId}   返回组长端的组员表那些字段（数组）还有该组的平均进度（区别于数组的新属性，别也塞到数组里）
-    ```json
+- [1.6.5 显示系统记录](#165-显示系统记录)
+- GET /snow/progress/{teamId}   
+  <br>返回组长端的组员表那些字段（数组）还有该组的平均进度<br>（区别于数组的新属性，别也塞到数组里）
+- return 
+ ```json
 {
         "code": 0,
             "data": [
@@ -566,25 +581,31 @@ return
     }
 ```
 
+
 - [1.6.6 对组员打分](#166-对组员打分)
-      打分之前需要获取一下系统有没有开放  get /snow/performSysState   0未开放，1开放了
+- 打分之前需要获取一下系统有没有开放  
+- GET /snow/performSysState   0未开放，1开放了
+- return 
 ```json
 {
     
 "state": 0
-
 }
 ```
-      打分： get /snow/perform?userId=123&score=22  给123号组员打分22
+
+      
+- 打分
+- GET /snow/perform?userId=123&score=22  给123号组员打分22
+- return 
 ```json
 {
     
 "code": 0
-
 }
 ```
-    - [1.6.7 分配组员任务](#167-分配组员任务)
-    post /snow/task/
+
+- [1.6.7 分配组员任务](#167-分配组员任务)
+- post /snow/task
 - payload:
 
 ```json
@@ -593,6 +614,8 @@ return
     "userTask": "非常紧急，请在三日内完成",  后台生成时间存进去
 }
 ```
+
+- return 
 ```json
 {
     
@@ -600,8 +623,11 @@ return
 
 }
 ```
-    - [1.6.9 更新工具状态](#169-更新工具状态)
-    先获取 get /snow/select/tools 返回工具表，多一个名字的字段 工具名字 name
+    
+
+- [1.6.9 更新工具状态](#169-更新工具状态)
+- 先获取 get /snow/select/tools 返回工具表，多一个名字的字段 工具名字 name
+- return 
 ```json
 {
         "code": 0,
@@ -628,15 +654,19 @@ return
     }
 ```
 
-      更新 get /snow/update/tools?toolId=123&state=使用中
 
+- 更新 get /snow/update/tools?toolId=123&state=使用中
+- return 
 ```json
 {
 "code":0
 }
 ```
-    - [1.6.11 更新车辆状态](#1611-更新车辆状态)
-    先获取 get /snow/select/cars 返回车辆表
+
+- [1.6.11 更新车辆状态](#1611-更新车辆状态)
+
+- 先获取 get /snow/select/cars 返回车辆表
+
 ```json
 {
         "code": 0,
@@ -663,16 +693,17 @@ return
     }
 ```
 
-      更新 get /snow/update/cars?carId=123&state=使用中
+- 更新 get /snow/update/cars?carId=123&state=使用中
 
 ```json
 {
 "code":0
 }
 ```
-  - [1.7. 审批端](#17-审批端)
-    - [1.7.1 查看列表](#171-查看列表)
-      - [1.7.1.1 获取员工列表](#1711-获取员工列表)
+- [1.7. 审批端](#17-审批端)
+  - [1.7.1 查看列表](#171-查看列表)
+    - [1.7.1.1 获取员工列表](#1711-获取员工列表)
+    
 ```json
 {
         "code": 0,
@@ -731,7 +762,7 @@ return
 ```
 
 
-      - [1.7.1.2 获取小组列表](#1712-获取小组列表)
+  - [1.7.1.2 获取小组列表](#1712-获取小组列表)
 ```json
  {
         "code": 0,
@@ -753,25 +784,32 @@ return
 ```
 
 
-      - [1.7.1.3 获取车辆列表](#1712-获取车辆列表)
- --- GET : /snow/select/cars
+  - [1.7.1.3 获取车辆列表](#1712-获取车辆列表)
+  
+     GET : /snow/select/cars
 
 ```json
-在上面
-
+{
+  在上面
+}
 ```
 
 
-      - [1.7.1.4 获取工具列表](#1714-获取工具列表)
----  get  : /snow/select/tools
+  - [1.7.1.4 获取工具列表](#1714-获取工具列表)
+  
+    -  get  : /snow/select/tools
+
 ```json
-在上面
+{
+  在上面
+}
 ```
 
-      - [1.7.1.5 获取申请列表](#1715-获取申请列表)
-      多一个申请状态state，表示该申请的处理结果  1表示调配完成，0表示未处理
+   - [1.7.1.5 获取申请列表](#1715-获取申请列表)
+   
+   - 多一个申请状态state，表示该申请的处理结果  1表示调配完成，0表示未处理
 
----GET　/snow/applications
+   - GET　/snow/applications
 
 ```json
 {
@@ -785,80 +823,109 @@ return
 ```
 
 
-    - [1.7.2 新增](#172-新增)
-      - [1.7.2.1 新增工具](#1721-新增工具)
-      post /snow/tools  
-｀｀｀ｊｓｏｎ
-｛
-＂ｔｏｏｌＮａｍｅ＂　：＂ａａａ＂
-｝
-｀｀｀
-－－－ｒｅｔｕｒｎ　
-｀｀｀ｊｓｏｎ
-｛
-＂ｃｏｄｅ＂　：　０
-｝
-｀｀｀
+- [1.7.2 新增](#172-新增)
+  - [1.7.2.1 新增工具](#1721-新增工具)
+  - post /snow/tools 
 
-      - [1.7.2.2 新增车辆](#1722-新增车辆)
-      post /snow/cars   ｎum 车牌号
-｀｀｀ｊｓｏｎ
-｛
-＂ｎｕｍ＂　：＂ａａａ＂
-｝
-｀｀｀
-－－－ｒｅｔｕｒｎ　
-｀｀｀ｊｓｏｎ
-｛
-＂ｃｏｄｅ＂　：　０
-｝
-｀｀｀
-ｐｕｔ　请求　　：ｘ－ｗｗｗ－ｆｏｒｍ－ｕｒｌｅｎｃｏｄｅｄ
+
+```json
+{
+  "toolName" : "aaa"
+}
+``` 
+      
+
+- return 
+```json
+{
+  "code" : 0
+}
+```
+
+- [1.7.2.2 新增车辆](#1722-新增车辆)
+ - post /snow/cars   ｎum 车牌号
+ ```json
+{
+"num": "aaa"
+}
+```
+
+- return 
+
+```json
+{
+"code": 0
+}
+```
+
+- put请求　　:x-www-form-urlencoded
     - [1.7.3 调配](#173-调配)
       - [1.7.3.1 调配员工](#1731-调配员工)
-      put /snow/changeTeam?userId=160023&teamId=5
+      
+ - put  /snow/changeTeam?userId=160023&teamId=5
+        
       - [1.7.3.2 调配车辆](#1732-调配车辆)
-      put http://localhost:8080/snow/changeCars?carId=1&teamId=5
+         - put /snow/changeCars?carId=1&teamId=5
+         
       - [1.7.3.3 调配工具](#1733-调配工具)
-      put/snow/changeTools?toolId=1&teamId=5
-      - [1.7.3.4 调配任务](#1734-调配任务)
-      post /snow/teamTask
-      teamId: 123
-      content: xxxxxxx
-    - [1.7.4 处理申请](#174-处理申请)
-     get /snow/apply?teamId=123&apply=1  1表示调配完成 -1表示忽略，从数据库中删除该条记录
-－－－上面４个正确返回
-｀｀｀ｊｓｏｎ
-｛
-＂ｃｏｄｅ＂：０
-｝
-    - [1.7.5 管理打分系统](#175-管理打分系统)
-    先获取  get /snow/performSysState 0未开放 1开放
-－－－ｒｅｔｕｒｎ　
-｀｀｀ｊｓｏｎ
-｛
-＂ｓｔａｔｅ＂：０
-｝
-｀｀｀
+ - put/snow/changeTools?toolId=1&teamId=5
+         
+         
+- [1.7.3.4 调配任务](#1734-调配任务)
 
-－－－
-put 　　　/snow/managePerformState?state=1
+ - post /snow/teamTask
+      - teamId: 123
+      - content: xxxxxxx
+- [1.7.4 处理申请](#174-处理申请)
 
-    - [1.7.6 对小组打分](#176-对小组打分)
-打分之前需要获取一下系统有没有开放  get /snow/performSysState   0未开放，1开放了
-－－－ｒｅｔｕｒｎ　
-｀｀｀ｊｓｏｎ
-｛
-＂ｓｔａｔｅ＂：０
-｝
-｀｀｀
+- get /snow/apply?teamId=123&apply=1  1表示调配完成 -1表示忽略，从数据库中删除该条记录
+- 上面４个正确返回
 
-  打分： get　/snow/perform/team?teamId=1&score=22 　， 给123组打分22
 
-    - [1.7.7 管理投票系统](#177-管理投票系统)
-    先获取  get /snow/voteSysState 0未开放 1开放
+```json
+{
+"code": 0
+}
+```
 
-    put 　，/snow/manageVoteState?state=1
+
+- [1.7.5 管理打分系统](#175-管理打分系统)
+- 先获取  get /snow/performSysState 0未开放 1开放
+- return 
+```json
+{
+"state": 0
+}
+```
+
+
+
+
+- put /snow/managePerformState?state=1
+
+
+- [1.7.6 对小组打分](#176-对小组打分)
+
+
+- 打分之前需要获取一下系统有没有开放 
+ - get /snow/performSysState   0未开放，1开放了
+ 
+```json
+{
+"state": 0
+}
+```
+
+- 打分： 
+
+- get　/snow/perform/team?teamId=1&score=22
+   - 给123组打分22
+
+- [1.7.7 管理投票系统](#177-管理投票系统)
+- 先获取  
+- get /snow/voteSysState 0未开放 1开放
+
+- put /snow/manageVoteState?state=1
 
 
 
