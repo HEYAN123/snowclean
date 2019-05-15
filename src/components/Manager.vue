@@ -100,7 +100,7 @@
         label="操作">
             <template slot-scope="scope">
                 <el-button type="primary" size="small" @click="actHandle('taskVisible',scope.row.teamId)">分配任务</el-button>
-                <el-button type="success" size="small" @click="actHandle('scoreVisible',scope.row.teamId)">打分</el-button>                
+                <el-button type="success" size="small" @click="actHandle('scoreVisible',scope.row.teamId)" :disabled="performSysState==0">打分</el-button>                
             </template>
         </el-table-column>
         </el-table>
