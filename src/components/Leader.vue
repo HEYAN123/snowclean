@@ -6,7 +6,7 @@
     <p>任务信息：{{teamTask}}</p>
     <el-divider content-position="left">借调</el-divider>
     <el-row>
-        <el-col span="12">
+        <el-col :span="12">
             <el-input
             type="textarea"
             :rows="2"
@@ -14,7 +14,7 @@
             v-model="borrowContent">
             </el-input>
         </el-col>
-        <el-col span="3">
+        <el-col :span="3">
             <el-button size="small" type="primary" style="margin-left: 10px;" @click="borrowHandle">
                 确定
             </el-button>
@@ -34,52 +34,51 @@
             label="姓名">
         </el-table-column>
         <el-table-column
-            width="400px"
             prop="userTask"
             label="任务">
         <template slot-scope="scope">
-            <el-row>
-                <el-col :span="20">
-                    <el-input
-                    type="textarea"
-                    :rows="2"
-                    :placeholder="scope.row.userTask?scope.row.userTask:'请输入任务要求'"
-                    v-model="sendTask">
-                    </el-input>
-                </el-col>
-                <el-col :span="4" style="padding-left:10px;">
-                    <el-button type="primary" size="small" @click="sendTaskHandle(scope.row.userId)">通知</el-button>
-                </el-col>
-            </el-row>
+            <div v-html="scope.row.userTask?scope.row.userTask:'暂无'"></div>
         </template>
         </el-table-column>
         <el-table-column
         prop="reward"
-        width="550px"
         label="进度">
         <template slot-scope="scope">
-            <el-row>
-                <el-col span="20">
-                    <el-slider
-                    v-model="staffProcess"
-                    show-input>
-                    </el-slider>
-                </el-col>
-                <el-col :span="4" style="padding-left:10px;padding-right:10px;">
-                    <el-button type="primary" size="small" @click="processChange(scope.row.userId)">更新</el-button>
-                </el-col>
-            </el-row>
+                    <el-progress :percentage="scope.row.num"></el-progress>
+            
         </template>
         </el-table-column>
         <el-table-column
-        prop="reward"
-        label="活动"
+        prop="userId"
+        label="操作"
         >
             <template slot-scope="scope">
-                <el-button type="warning" size="small" :disabled="performSysState==0?true:false" @click="scoreVisible=true;selectUser=scope.row.useId">打分</el-button>
+                <el-button type="primary" size="small" @click="actHandle('processVisible',scope.row.userId)">更新进度</el-button>
+                <el-button type="success" size="small" @click="actHandle('taskVisible',scope.row.userId)">分配任务</el-button>                
+                <el-button type="warning" size="small" :disabled="performSysState==0?true:false" @click="actHandle('scoreVisible',scope.row.userId)">打分</el-button>
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="更新进度"
+            :visible.sync="processVisible"
+            width="30%">
+            请输入进度值：<el-input v-model="staffProcess" type="number"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="processVisible = false">取 消</el-button>
+                <el-button type="primary" @click="processChange">确 定</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+            title="通知任务"
+            :visible.sync="taskVisible"
+            width="30%">
+            请输入任务内容：<el-input v-model="sendTask" type="textarea" :autosize="{ minRows: 4}"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="taskVisible = false">取 消</el-button>
+                <el-button type="primary" @click="sendTaskHandle">确 定</el-button>
+            </span>
+        </el-dialog>
         <el-dialog
             title="评估绩效"
             :visible.sync="scoreVisible"
@@ -166,33 +165,16 @@ export default {
         teamTaskTime: "--",
         teamTask: "--",
         borrowContent: "",
-        averageProgress: "--",
+        averageProgress: 0,
         performSysState: 0,
         scoreVisible: false,
-        selectUser:"",
+        processVisible: false,
+        taskVisible: false,
+        selectUser:"0",
         newScore:0,
         sendTask:"",
         staffProcess:0,
-        tableData: [{
-            "userId": "123",
-            "userName":"贺妍",
-            "vote": 23
-        },
-        {
-            "userId": "321",
-            "userName":"小李",
-            "vote": 22
-        },
-        {
-            "userId": "222",
-            "userName":"小张",
-            "vote": 20
-        },
-        {
-            "userId": "222",
-            "userName":"小张",
-            "vote": 20
-        }],
+        tableData: [],
         carTable: [],
         toolTable: []
     }
@@ -210,18 +192,18 @@ export default {
       })
       this.axios.get(`${this.API}performSysState`).
       then(res=>{
-        this.performSysState = state;
+        this.performSysState = res.data.state;
       });
-    //   this.axios.get(`${this.API}progress/${this.Cookies.get('userId')}`).
-    //   then(res=>{
-    //     if(res.data.code === 0) {
-    //         this.tableData = res.data.data;
-    //         this.averageProgress = res.data.averageProgress
-    //     }
-    //     else {
-    //         this.$message.error(res.data.message);
-    //     }
-    //   })
+      this.axios.get(`${this.API}progress/${this.Cookies.get('userId')}`).
+      then(res=>{
+        if(res.data.code === 0) {
+            this.tableData = res.data.data;
+            this.averageProgress = res.data.averageProgress
+        }
+        else {
+            this.$message.error(res.data.message);
+        }
+      })
         this.axios.get(`${this.API}select/tools/${this.Cookies.get('userId')}`).
         then(res=>{
             this.toolTable = res.data.data;
@@ -233,6 +215,7 @@ export default {
   },
   methods:{
       borrowHandle() {
+          
           this.axios.post(`${this.API}needs`,{
               teamId: this.Cookies.get('userId'),
               applyContent: this.borrowContent
@@ -246,14 +229,16 @@ export default {
                 }
             })
       },
-      sendTaskHandle(userId) {
+      sendTaskHandle() {
+          console.log(this.selectUser)
           this.axios.post(`${this.API}task`,{
-              userId: userId,
+              userId: this.selectUser,
               userTask: this.sendTask
           }).
             then(res=>{
                 if(res.data.code == 0) {
-                    this.$message.success("发送借调信息成功！");
+                    this.$message.success("发送任务信息成功！");
+                    this.taskVisible = false;
                 }
                 else {
                     this.$message.error(res.data.message);
@@ -261,10 +246,11 @@ export default {
             })
       },
       changeScore() {
-          this.axios.get(`${this.API}perform?userId=${selectUser}&score=${newScore}`).
+          this.axios.get(`${this.API}perform?userId=${this.selectUser}&score=${this.newScore}`).
             then(res=>{
                 if(res.data.code == 0) {
                     this.$message.success("评分成功！");
+                    this.scoreVisible = false;
                 }
                 else {
                     this.$message.error(res.data.message);
@@ -293,11 +279,16 @@ export default {
                 }
             })
       },
-      processChange(userId) {
-          this.axios.get(`${this.API}progress?userId=${userId}&num=${staffProcess}`).
+      actHandle(visible,userId) {
+          this[visible]=true;
+          this.selectUser=userId;
+      },
+      processChange() {
+          this.axios.get(`${this.API}progress?userId=${this.selectUser}&num=${this.staffProcess}`).
             then(res=>{
             if(res.data.code == 0) {
                 this.$message.success("更新进度成功！");
+                this.processVisible = false;
             }
             else {
                 this.$message.error(res.data.message);

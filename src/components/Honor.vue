@@ -21,7 +21,7 @@
         prop="tag"
         label="荣誉">
         <template slot-scope="scope">
-            {{scope.$index >3 || scope.$index == 3 ? null :"光荣扫雪员"}}
+            {{scope.$index >3 || scope.$index == 3 ? null :"荣誉扫雪员"}}
         </template>
         </el-table-column>
         </el-table>

@@ -18,7 +18,7 @@
             label="性别">
         </el-table-column>
         <el-table-column
-        prop="idCard"
+        prop="idcard"
         label="身份证号">
         </el-table-column>
         <el-table-column
@@ -99,10 +99,10 @@
         </template>
         </el-table-column>
         <el-table-column
-        prop="averageProgress"
+        prop="process"
         label="平均进度">
         <template slot-scope="scope">
-            {{scope.row.averageProgress+'%'}}
+            {{scope.row.process?scope.row.process:0}}%
             </template>
         </el-table-column>
         
@@ -110,10 +110,21 @@
         prop="reward"
         label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="small" :disabled="performSysState==0" @click="scoreVisible = true;scoreOne=scope.row.teamId">打分</el-button>
+                <el-button type="primary" size="small" @click="actHandle('taskVisible',scope.row.teamId)">分配任务</el-button>
+                <el-button type="success" size="small" @click="actHandle('scoreVisible',scope.row.teamId)">打分</el-button>                
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="分配小组任务"
+            :visible.sync="taskVisible"
+            width="30%">
+            请输入任务内容：<el-input v-model="taskContent" type="textarea" :autosize="{ minRows: 4}"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="taskVisible = false">取 消</el-button>
+                <el-button type="primary" @click="taskHandle">确 定</el-button>
+            </span>
+        </el-dialog>
         <el-dialog
             title="评估绩效"
             :visible.sync="scoreVisible"
@@ -152,7 +163,7 @@
         prop="teamId"
         label="申请处理">
             <template slot-scope="scope">
-                <el-button type="primary" size="small" @click="manageApp(scope.row.teamId,1)" :disabled="scope.row.state = 1">调配完成</el-button>
+                <el-button type="primary" size="small" @click="manageApp(scope.row.teamId,1)" :disabled="scope.row.state == 1">调配完成</el-button>
                 <el-button type="warning" size="small" @click="manageApp(scope.row.teamId,-1)">忽略申请</el-button>
             </template>
         </el-table-column>
@@ -285,9 +296,11 @@ export default {
         scoreOne: "",
         newTeamId:"",
         newTeamPs:"",
+        selectTeam: "",
         changeStaffVisible: false,
         newTeamVisible: false,
         scoreVisible: false,
+        taskVisible: false,
         newCarVisible: false,
         changeCarVisible:false,
         newToolVisible: false,
@@ -353,14 +366,15 @@ export default {
     })
   },
   methods:{
-      taskHandle(id) {
+      taskHandle() {
           this.axios.post(`${this.API}changeTeamTask`,{
-              teamId: id,
+              teamId: this.selectTeam,
               content: this.taskContent
           }).
             then(res=>{
                 if(res.data.code === 0) {
                     this.$message.success("通知成功！");
+                    this.taskVisible = false;
                     // location.reload();
                 }
             })
@@ -470,6 +484,10 @@ export default {
                     
                 }
             })
+      },
+      actHandle(visible,teamId) {
+          this[visible]=true;
+          this.selectTeam=teamId;
       },
 
   }

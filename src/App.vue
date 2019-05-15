@@ -16,27 +16,27 @@
               class="el-menu-vertical-demo"
               @select="handleSelect">
               <el-menu-item index="staff" v-if="identify==='A'">
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-user"></i>
                 <span slot="title">员工中心</span>
               </el-menu-item>
               <el-menu-item index="leader" v-if="identify==='B'">
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-user"></i>
                 <span slot="title">组长中心</span>
               </el-menu-item>
               <el-menu-item index="manager" v-if="identify==='C'">
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-user"></i>
                 <span slot="title">管理中心</span>
               </el-menu-item>
               <el-menu-item index="honor">
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-medal"></i>
                 <span slot="title">荣誉墙</span>
               </el-menu-item>
               <el-menu-item index="perform">
-                <i class="el-icon-setting"></i>
+                <i class="el-icon-trophy"></i>
                 <span slot="title">绩效墙</span>
               </el-menu-item>
               <el-menu-item index="forum">
-                <i class="el-icon-document"></i>
+                <i class="el-icon-chat-line-round"></i>
                 <span slot="title">雪情论坛</span>
               </el-menu-item>
             </el-menu>
