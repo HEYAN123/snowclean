@@ -79,7 +79,6 @@
             label="小组编号">
         </el-table-column>
         <el-table-column
-            width="400px"
             prop="taskContent"
             label="任务">
             <template slot-scope="scope">
@@ -92,6 +91,13 @@
         label="平均进度">
         <template slot-scope="scope">
             {{scope.row.process?scope.row.process:0}}%
+            </template>
+        </el-table-column>
+        <el-table-column
+        prop="score"
+        label="小组绩效">
+        <template slot-scope="scope">
+            {{scope.row.score?scope.row.score:'--'}}
             </template>
         </el-table-column>
         
@@ -379,7 +385,7 @@ export default {
             })
       },
       changeScore() {
-          this.axios.put(`${this.API}perform/team?teamId=${this.scoreOne}&score=${this.changeScore}`).
+          this.axios.get(`${this.API}perform/team?teamId=${this.selectTeam}&score=${this.newScore}`).
             then(res=>{
                 if(res.data.code === 0) {
                     this.$message.success("打分成功");
