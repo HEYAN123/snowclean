@@ -8,6 +8,9 @@
         <el-table-column
             type="index"
             label="排名">
+            <template slot-scope="scope">
+                {{scope.$index+1+(nowPage-1)*5}}
+            </template>
         </el-table-column>
         <el-table-column
             prop="userName"
@@ -21,7 +24,7 @@
         prop="tag"
         label="荣誉">
         <template slot-scope="scope">
-            {{scope.$index >3 || scope.$index == 3 ? null :"荣誉扫雪员"}}
+            {{(scope.$index+1+(nowPage-1)*5) >3 ? null :"荣誉扫雪员"}}
         </template>
         </el-table-column>
         </el-table>
@@ -57,14 +60,14 @@ export default {
   },
   methods:{
       tableRowClassName({row, rowIndex}) {
-        if (rowIndex < 3) {
+        if (rowIndex < 3 && this.nowPage == 1) {
           return 'warning-row';
         } 
         return '';
       },
       handleCurrentChange(index) {
         this.nowPage = index;
-        this.axios.get(`${this.API}snowList?page=${this.nowPage}`).
+        this.axios.get(`${this.API}honor?page=${this.nowPage}`).
         then(res=>{
           this.tableData = res.data.data.honorList;
           this.page = res.data.data.pages;

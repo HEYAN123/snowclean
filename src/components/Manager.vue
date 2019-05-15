@@ -82,21 +82,10 @@
             width="400px"
             prop="taskContent"
             label="任务">
-        <template slot-scope="scope">
-            <el-row>
-                <el-col :span="20">
-                    <el-input
-                    type="textarea"
-                    :rows="2"
-                    :placeholder="scope.row.taskContent?scope.row.taskContent:'请输入任务要求'"
-                    v-model="taskContent">
-                    </el-input>
-                </el-col>
-                <el-col :span="4" style="padding-left:10px;">
-                    <el-button type="primary" size="small" @click="taskHandle(scope.row.teamId)">通知</el-button>
-                </el-col>
-            </el-row>
+            <template slot-scope="scope">
+            <div v-html="scope.row.taskContent?scope.row.taskContent:'暂无'"></div>
         </template>
+       
         </el-table-column>
         <el-table-column
         prop="process"

@@ -54,7 +54,7 @@ export default {
   methods:{
       handleCurrentChange(index) {
         this.nowPage = index;
-        this.axios.get(`${this.API}snowList?page=${this.nowPage}`).
+        this.axios.get(`${this.API}work?page=${this.nowPage}`).
         then(res=>{
           this.tableData = res.data.data.workList;
           this.page = res.data.data.page;

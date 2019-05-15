@@ -85,7 +85,7 @@ export default {
         this.nowPage = index;
         this.axios.get(`${this.API}comments?snowId=${this.$route.params.id}&page=${this.nowPage}`).
         then(res=>{
-          this.snows = res.data.data.snowList;
+          this.snows = res.data.data.commentList;
           this.page = res.data.data.page;
         })
       },
