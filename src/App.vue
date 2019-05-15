@@ -4,7 +4,7 @@
       <el-header>
         <el-row>
           <el-col :span="12" class="sysname">扫雪工作管理系统</el-col>
-          <el-col :span="10" class="username" v-if="login">欢迎，贺妍</el-col>
+          <el-col :span="10" class="username" v-if="login">欢迎，{{name}}</el-col>
           <el-col :span="2" class="username" @click.native="logout" v-if="login"><i class="el-icon-remove"></i>退出</el-col>
         </el-row>
       </el-header>
@@ -55,19 +55,39 @@ export default {
   name: 'App',
   data() {
     return {
-      login: true,
-      identify: "C"
+      login: false,
+      identify: "",
+      name: "",
+    }
+  },
+  created(){
+    const type = this.Cookies.get('type');
+    const name = this.Cookies.get('name');
+    this.name = name;
+    if(type === "A") {
+      this.identify = "A";
+      this.login = true;
+    }
+    else if(type === "B") {
+      this.identify = "B";
+      this.login = true;
+    }
+    else if(type === "C") {
+      this.identify = "C";
+      this.login = true;
     }
   },
   methods: {
     logout() {
       console.log(this.API)
-      this.Cookies.remove('token');
       this.Cookies.remove('userId');
+      this.Cookies.remove('name');
       this.Cookies.remove('type');
+      this.$forceUpdate();
       this.$router.push({
           path: '/'
       })
+      location.reload();
     },
     handleSelect(key) {
       this.$router.push({

@@ -16,7 +16,10 @@
         style="text-align:right;"
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change="handleCurrentChange"
+        :current-page.sync="nowPage"
+        :page-size="page.eachPage"
+        :total="page.totalSize">
         </el-pagination>
     </div>
   </div>
@@ -27,37 +30,17 @@ export default {
   name: 'Forum',
   data () {
     return {
-      snows: [
-      {
-        "snowId": 123,
-        "title": "和兴路重大雪灾",
-        "content": "严重严重严重",
-        "time": "2019/4/4 9:00:23",
-        "author": "贺妍",
-      },
-      {
-        "snowId": 321,
-        "title": "和兴路重大雪灾",
-        "content": "严重严重严重",
-        "time": "2019/4/4 9:00:23",
-        "author": "贺妍",
-      },
-      {
-        "snowId": 2,
-        "title": "和兴路重大雪灾",
-        "content": "严重严重严重",
-        "time": "2019/4/4 9:00:23",
-        "author": "贺妍",
-      },
-      {
-        "snowId": 3,
-        "title": "和兴路重大雪灾",
-        "content": "严重严重严重",
-        "time": "2019/4/4 9:00:23",
-        "author": "贺妍",
-      }
-    ]
+      nowPage: 1,
+      page:{},
+      snows: []
     }
+  },
+  created() {
+    this.axios.get(`${this.API}snowList?page=${this.nowPage}`).
+    then(res=>{
+      this.snows = res.data.data.snowList;
+      this.page = res.data.data.page;
+    })
   },
   methods:{
       tableRowClassName({row, rowIndex}) {
@@ -73,6 +56,14 @@ export default {
           this.$router.push({
               path: `/newseditor`
           });
+      },
+      handleCurrentChange(index) {
+        this.nowPage = index;
+        this.axios.get(`${this.API}snowList?page=${this.nowPage}`).
+        then(res=>{
+          this.snows = res.data.data.snowList;
+          this.page = res.data.data.page;
+        })
       }
   }
 }

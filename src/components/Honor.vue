@@ -30,7 +30,10 @@
         style="text-align:right;"
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change="handleCurrentChange"
+        :current-page.sync="nowPage"
+        :page-size="page.eachPage"
+        :total="page.totalSize">
         </el-pagination>
   </div>
 </template>
@@ -40,27 +43,17 @@ export default {
   name: 'Honor',
   data () {
     return {
-      tableData: [{
-        "userId": "123",
-        "userName":"贺妍",
-        "vote": 23
-      },
-      {
-        "userId": "321",
-        "userName":"小李",
-        "vote": 22
-      },
-      {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      },
-      {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      }]
+      nowPage: 1,
+      page:{},
+      tableData: []
     }
+  },
+  created() {
+    this.axios.get(`${this.API}honor?page=1`).
+    then(res=>{
+      this.tableData = res.data.data.honorList;
+      this.page = res.data.data.pages;
+    })
   },
   methods:{
       tableRowClassName({row, rowIndex}) {
@@ -69,6 +62,14 @@ export default {
         } 
         return '';
       },
+      handleCurrentChange(index) {
+        this.nowPage = index;
+        this.axios.get(`${this.API}snowList?page=${this.nowPage}`).
+        then(res=>{
+          this.tableData = res.data.data.honorList;
+          this.page = res.data.data.pages;
+        })
+      }
   }
 }
 </script>

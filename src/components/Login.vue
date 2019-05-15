@@ -26,6 +26,7 @@
               </el-col>
               <el-col :span="22">
                 <el-input
+                  type="password"
                   placeholder="请输入您的账号密码"
                   prefix-icon="el-icon-s-check"
                   v-model="password">
@@ -33,7 +34,7 @@
               </el-col>
             </el-row>
             <br><br>
-            <el-button type="primary" style="width: 100%;">登录</el-button>
+            <el-button type="primary" style="width: 100%;" @click="loginHandle">登录</el-button>
             <br><br>
             <el-button type="warning" style="width: 100%;" @click="dialogVisible = true">没有账号？点击注册</el-button>
             <el-dialog
@@ -48,8 +49,8 @@
                   <el-radio v-model="ruleForm.sex" label="男">男</el-radio>
                   <el-radio v-model="ruleForm.sex" label="女">女</el-radio>
                 </el-form-item>
-                <el-form-item label="身份证号" prop="id">
-                  <el-input v-model="ruleForm.id"></el-input>
+                <el-form-item label="身份证号" prop="idCard">
+                  <el-input v-model="ruleForm.userId"></el-input>
                 </el-form-item>
                 <el-form-item label="工龄" prop="workAge">
                   <el-input v-model="ruleForm.workAge"></el-input>
@@ -85,7 +86,9 @@ export default {
       ruleForm: {
           name: '',
           sex: '',
-          id: '',
+          idCard: '',
+          workAge: 0,
+          address: '',
           password: ''
         },
       rules: {
@@ -95,7 +98,7 @@ export default {
         sex: [
           { required: true, message: '请选择您的性别', trigger: 'blur' }
         ],
-        id: [
+        userId: [
           { required: true, message: '请输入您的身份证号码', trigger: 'blur' }
         ],
         password: [
@@ -104,10 +107,59 @@ export default {
       }
     }
   },
+  created() {
+
+  },
   methods: {
+    loginHandle(){
+      this.axios.post(`${this.API}login`,{
+        userId: this.userId,
+        password: this.password
+      }).
+      then(res=>{
+        if(res.data.code === 0) {
+            this.$message.success('登录成功！');
+            this.Cookies.set('type',res.data.type);
+            this.Cookies.set('name',res.data.name);
+            this.Cookies.set('userId',this.userId);
+            
+            if(res.data.type === 'A') {
+              this.$router.push({
+                path: '/staff'
+              });
+
+            }
+            if(res.data.type === 'B') {
+              this.$router.push({
+                path: '/leader'
+              });
+            }
+            if(res.data.type === 'C') {
+              this.$router.push({
+                path: '/manager'
+              });
+            }
+            location.reload();
+        }
+        else {
+            this.$message.error(res.data.message);
+        }
+      })
+    },
     submitForm() {
-        console.log(this.ruleForm);
-      },
+      this.axios.post(`${this.API}signin`,this.ruleForm).
+      then(res=>{
+        if(res.data.code === 0) {
+            this.$Message.success('注册成功！');
+            this.$router.push({
+                path: '/'
+            })
+        }
+        else {
+            this.$message.error(res.data.message);
+        }
+      })
+    },
       resetForm(formName) {
         this.$refs[formName].resetFields();
       }

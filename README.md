@@ -928,4 +928,11 @@
 - put /snow/manageVoteState?state=1
 
 
+新建小组
 
+post /snow/newTeam
+
+{
+  teamId:2,
+  password:123456
+}

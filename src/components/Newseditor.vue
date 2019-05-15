@@ -6,8 +6,7 @@
         v-model="content" 
         ref="myQuillEditor" 
         :options="editorOption" 
-        @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
-        @change="onEditorChange($event)">
+        >
     </quill-editor>
     <br>
     <el-button type="primary" @click="handleClick" size="small">发布</el-button>
@@ -19,6 +18,8 @@ export default {
   name: 'Newseditor',
   data () {
     return {
+      newsTitle: "",
+      content: "",
       editorOption:{
           modules:{
               toolbar:[
@@ -36,6 +37,18 @@ export default {
         } 
         return '';
       },
+      handleClick() {
+        this.content && this.axios.post(`${this.API}newSnow`,{
+          userId: this.Cookies.get('userId'),
+          title: this.newsTitle,
+          content: this.content
+        }).
+        then(res=>{
+          this.$router.push({
+            path: '/forum'
+          });
+        })
+      }
   }
 }
 </script>

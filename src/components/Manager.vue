@@ -10,193 +10,266 @@
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="name"
             label="姓名">
         </el-table-column>
         <el-table-column
-            prop="score"
+            prop="sex"
             label="性别">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="idCard"
         label="身份证号">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="userTeamId"
         label="小组编号">
+        <template slot-scope="scope">
+            {{scope.row.userTeamId?scope.row.userTeamId:'未分配'}}
+        </template>
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="cstate"
         label="工作状态">
+        <template slot-scope="scope">
+            {{stateText[scope.row.cstate]}}
+        </template>
         </el-table-column>
         <el-table-column
         prop="reward"
         label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="small">调配小组</el-button>
+                <el-button type="primary" size="small" @click="changeStaffVisible = true;changeOne = scope.row.userId">调配小组</el-button>
             </template>
         </el-table-column>
         </el-table>
-        <br>
-        <el-pagination
-        style="text-align:right;"
-        background
-        layout="prev, pager, next"
-        :total="1000">
-        </el-pagination>
+        <el-dialog
+            title="调配员工到小组"
+            :visible.sync="changeStaffVisible"
+            width="30%">
+            请输入目标小组编号：<el-input v-model="toTeam"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="changeStaffVisible = false">取 消</el-button>
+                <el-button type="primary" @click="changeStaff(changeOne)">确 定</el-button>
+            </span>
+        </el-dialog>
     <br>
     <el-divider content-position="left">小组管理</el-divider>
-    <p><el-button type="success" size="small">新建小组</el-button></p>
+    <p><el-button type="success" size="small" @click="newTeamVisible=true">新建小组</el-button></p>
+    <el-dialog
+        title="新建小组"
+        :visible.sync="newTeamVisible"
+        width="30%">
+        请输入小组编号：<el-input v-model="newTeamId"></el-input>
+        请输入小组账号密码：<el-input v-model="newTeamPs"></el-input>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="newTeamVisible = false">取 消</el-button>
+            <el-button type="primary" @click="newTeam">确 定</el-button>
+        </span>
+    </el-dialog>
     <el-table
-        :data="tableData"
+        :data="teamTable"
         border
         style="width: 100%">
         <el-table-column
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="teamId"
             label="小组编号">
         </el-table-column>
         <el-table-column
             width="400px"
-            prop="score"
+            prop="taskContent"
             label="任务">
         <template slot-scope="scope">
             <el-row>
-                <el-col span="20">
+                <el-col :span="20">
                     <el-input
                     type="textarea"
                     :rows="2"
-                    placeholder="请输入任务要求"
-                    v-model="textarea">
+                    :placeholder="scope.row.taskContent?scope.row.taskContent:'请输入任务要求'"
+                    v-model="taskContent">
                     </el-input>
                 </el-col>
-                <el-col span="4" style="padding-left:10px;">
-                    <el-button type="primary" size="small">通知</el-button>
+                <el-col :span="4" style="padding-left:10px;">
+                    <el-button type="primary" size="small" @click="taskHandle(scope.row.teamId)">通知</el-button>
                 </el-col>
             </el-row>
         </template>
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="averageProgress"
         label="平均进度">
+        <template slot-scope="scope">
+            {{scope.row.averageProgress+'%'}}
+            </template>
         </el-table-column>
+        
         <el-table-column
         prop="reward"
         label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="small">打分</el-button>
+                <el-button type="primary" size="small" :disabled="performSysState==0" @click="scoreVisible = true;scoreOne=scope.row.teamId">打分</el-button>
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="评估绩效"
+            :visible.sync="scoreVisible"
+            width="30%">
+            请输入分数：<el-input v-model="newScore"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="scoreVisible = false">取 消</el-button>
+                <el-button type="primary" @click="changeScore">确 定</el-button>
+            </span>
+        </el-dialog>
     <br>
     <el-divider content-position="left">申请管理</el-divider>
     <el-table
-        :data="tableData"
+        :data="appTable"
         border
         style="width: 100%">
         <el-table-column
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="teamId"
             label="小组编号">
         </el-table-column>
         <el-table-column
-            prop="score"
+            prop="content"
             label="申请内容">
         </el-table-column>
         <el-table-column
-        prop="reward"
+            prop="state"
+            label="申请状态">
+            <template slot-scope="scope">
+                {{appStateText[scope.row.state]}}
+            </template>
+        </el-table-column>
+        <el-table-column
+        prop="teamId"
         label="申请处理">
             <template slot-scope="scope">
-                <el-button type="primary" size="small">调配完成</el-button>
-                <el-button type="warning" size="small">忽略申请</el-button>
+                <el-button type="primary" size="small" @click="manageApp(scope.row.teamId,1)" :disabled="scope.row.state = 1">调配完成</el-button>
+                <el-button type="warning" size="small" @click="manageApp(scope.row.teamId,-1)">忽略申请</el-button>
             </template>
         </el-table-column>
         </el-table>
         <br>
     <el-divider content-position="left">车辆管理</el-divider>
-    <p><el-button type="success" size="small">新增车辆</el-button></p>
+    <p><el-button type="success" size="small" @click="newCarVisible = true">新增车辆</el-button></p>
+    <el-dialog
+        title="新增车辆"
+        :visible.sync="newCarVisible"
+        width="30%">
+        请输入车牌号：<el-input v-model="newCarNum"></el-input>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="newCarVisible = false">取 消</el-button>
+            <el-button type="primary" @click="newCar">确 定</el-button>
+        </span>
+    </el-dialog>
     <el-table
-        :data="tableData"
+        :data="carTable"
         border
         style="width: 100%">
         <el-table-column
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="carId"
             label="车辆编号">
         </el-table-column>
         <el-table-column
             width="400px"
-            prop="score"
+            prop="num"
             label="车牌号">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="teamId"
         label="小组编号">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="state"
         label="使用状态">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="teamId"
         label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="small">调配</el-button>
+                <el-button type="primary" size="small" @click="changeCarVisible=true;changeCarId=scope.row.carId">调配</el-button>
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="调配车辆到小组"
+            :visible.sync="changeCarVisible"
+            width="30%">
+            请输入目标小组编号：<el-input v-model="carToTeam"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="changeCarVisible = false">取 消</el-button>
+                <el-button type="primary" @click="changeCar">确 定</el-button>
+            </span>
+        </el-dialog>
         <br>
-        <el-pagination
-        style="text-align:right;"
-        background
-        layout="prev, pager, next"
-        :total="1000">
-        </el-pagination>
     <el-divider content-position="left">工具管理</el-divider>
-    <p><el-button type="success" size="small">新增车辆</el-button></p>
+    <p><el-button type="success" size="small" @click="newToolVisible=true">新增工具</el-button></p>
+    <el-dialog
+        title="新增工具"
+        :visible.sync="newToolVisible"
+        width="30%">
+        请输入工具名称：<el-input v-model="newToolName"></el-input>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="newToolVisible = false">取 消</el-button>
+            <el-button type="primary" @click="newTool">确 定</el-button>
+        </span>
+    </el-dialog>
     <el-table
-        :data="tableData"
+        :data="toolTable"
         border
         style="width: 100%">
         <el-table-column
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="toolId"
             label="工具编号">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="toolName"
+            label="工具名称">
+        </el-table-column>
+        <el-table-column
+            prop="teamId"
             label="小组编号">
         </el-table-column>
         <el-table-column
-            prop="score"
+            prop="state"
             label="使用状态">
         </el-table-column>
         <el-table-column
         prop="reward"
         label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="small">调配</el-button>
+                <el-button type="primary" size="small" @click="changeToolVisible=true;changeToolId=scope.row.toolId">调配</el-button>
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="调配工具到小组"
+            :visible.sync="changeToolVisible"
+            width="30%">
+            请输入目标小组编号：<el-input v-model="toolToTeam"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="changeToolVisible = false">取 消</el-button>
+                <el-button type="primary" @click="changeTool">确 定</el-button>
+            </span>
+        </el-dialog>
         <br>
-        <el-pagination
-        style="text-align:right;"
-        background
-        layout="prev, pager, next"
-        :total="1000">
-        </el-pagination>
         <el-divider content-position="left">活动管理</el-divider>
-        <el-button type="primary" size="small">投票系统开启</el-button>
-        <el-button type="success" size="small">绩效系统开启</el-button>
+        <el-button type="primary" size="small" @click="changeVote(voteSysState==1?0:1)">{{voteSysState==1?'投票系统关闭':'投票系统开启'}}</el-button>
+        <el-button type="success" size="small" @click="changePerform(performSysState==1?0:1)">{{performSysState==1?'绩效系统关闭':'绩效系统开启'}}</el-button>
   </div>
 </template>
 
@@ -205,35 +278,200 @@ export default {
   name: 'Manager',
   data () {
     return {
-      tableData: [{
-        "userId": "123",
-        "userName":"贺妍",
-        "vote": 23
+        performSysState: 0,
+        voteSysState: 0,
+        taskContent: "",
+        changeOne: "",
+        scoreOne: "",
+        newTeamId:"",
+        newTeamPs:"",
+        changeStaffVisible: false,
+        newTeamVisible: false,
+        scoreVisible: false,
+        newCarVisible: false,
+        changeCarVisible:false,
+        newToolVisible: false,
+        changeToolVisible: false,
+        newToolName: "",
+        carToTeam:"",
+        toolToTeam:"",
+        changeToolId:"",
+        changeCarId:"",
+        newCarNum: "",
+        toTeam:"",
+        teamTask:"",
+        newScore:0,
+        appStateText: "--",
+      stateText:{
+          "0": "工作中",
+          "1": "待工作",
+          "-1": "请假中"
       },
-      {
-        "userId": "321",
-        "userName":"小李",
-        "vote": 22
+      appStateText:{
+          1:"调配完成",
+          0:"未处理"
       },
-      {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      },
-      {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      }]
+      tableData: [],
+      teamTable:[],
+      appTable:[],
+      carTable:[],
+      toolTable:[]
     }
   },
+  created() {
+    this.axios.get(`${this.API}starfs`).
+    then(res=>{
+    this.tableData = res.data.data;
+    })
+    this.axios.get(`${this.API}performSysState`).
+    then(res=>{
+    this.performSysState = res.data.state;
+    })
+    this.axios.get(`${this.API}voteSysState`).
+    then(res=>{
+    this.voteSysState = res.data.state;
+    })
+    this.axios.get(`${this.API}teams`).
+    then(res=>{
+    this.teamTable = res.data.data;
+    })
+    this.axios.get(`${this.API}teams`).
+    then(res=>{
+    this.teamTable = res.data.data;
+    })
+    this.axios.get(`${this.API}applications`).
+    then(res=>{
+    this.appTable = res.data.data;
+    })
+    this.axios.get(`${this.API}select/cars`).
+    then(res=>{
+    this.carTable = res.data.data;
+    })
+    this.axios.get(`${this.API}select/tools`).
+    then(res=>{
+    this.toolTable = res.data.data;
+    })
+  },
   methods:{
-      tableRowClassName({row, rowIndex}) {
-        if (rowIndex < 3) {
-          return 'warning-row';
-        } 
-        return '';
+      taskHandle(id) {
+          this.axios.post(`${this.API}changeTeamTask`,{
+              teamId: id,
+              content: this.taskContent
+          }).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("通知成功！");
+                    // location.reload();
+                }
+            })
       },
+      changeStaff(index) {
+          this.axios.put(`${this.API}changeTeam?userId=${index}&teamId=${this.toTeam}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("调配成功！");
+                    this.changeStaffVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      changeScore() {
+          this.axios.put(`${this.API}perform/team?teamId=${this.scoreOne}&score=${this.changeScore}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("打分成功");
+                    this.scoreVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      newTeam() {
+          this.axios.post(`${this.API}newTeam`,{
+              teamId: this.newTeamId,
+              password: this.newTeamPs
+          }).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("创建成功！");
+                    this.newTeamVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      newCar() {
+          this.axios.post(`${this.API}cars`,{
+              num:this.newCarNum
+          }).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("创建成功！");
+                    this.newCarVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      newTool() {
+          this.axios.post(`${this.API}tools`,{
+              toolName:this.newToolName
+          }).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("创建成功！");
+                    this.newToolVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      changeTool() {
+          this.axios.put(`${this.API}changeTools?toolId=${this.changeToolId}&teamId=${this.toolToTeam}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("调配成功！");
+                    this.changeToolVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      changeCar() {
+          this.axios.put(`${this.API}changeCars?carId=${this.changeCarId}&teamId=${this.carToTeam}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("调配成功！");
+                    this.changeCarVisible = false;
+                    // location.reload();
+                }
+            })
+      },
+      manageApp(teamId,state) {
+          this.axios.get(`${this.API}apply?teamId=${teamId}&apply=${state}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("修改状态成功");
+                    // location.reload();
+                }
+            })
+      },
+      changeVote(state) {
+          this.axios.put(`${this.API}manageVoteState?state=${state}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    location.reload();
+                    this.$message.success("修改状态成功");
+                    // 
+                }
+            })
+      },
+      changePerform(state) {
+          this.axios.put(`${this.API}managePerformState?state=${state}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    location.reload();
+                    this.$message.success("修改状态成功");
+                    
+                }
+            })
+      },
+
   }
 }
 </script>

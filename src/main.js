@@ -17,7 +17,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor);
 
-Vue.prototype.API = "http://120.79.141.169:8080/snow/api/"
+Vue.prototype.API = "http://139.196.75.14/snow/"
 Vue.prototype.axios = axios
 Vue.prototype.Cookies = Cookies
 

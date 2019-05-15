@@ -2,8 +2,8 @@
   <div class="hello">
     <p style="font-size:30px;margin-top:0;">组长中心</p>
     <el-divider content-position="left">当前任务</el-divider>
-    <p>分配时间：2019/10/10</p>
-    <p>任务信息：xxxxx处的雪三天内扫完</p>
+    <p>分配时间：{{teamTaskTime}}</p>
+    <p>任务信息：{{teamTask}}</p>
     <el-divider content-position="left">借调</el-divider>
     <el-row>
         <el-col span="12">
@@ -11,17 +11,17 @@
             type="textarea"
             :rows="2"
             placeholder="请输入借调需求"
-            v-model="textarea">
+            v-model="borrowContent">
             </el-input>
         </el-col>
         <el-col span="3">
-            <el-button size="small" type="primary" style="margin-left: 10px;">
+            <el-button size="small" type="primary" style="margin-left: 10px;" @click="borrowHandle">
                 确定
             </el-button>
         </el-col>
     </el-row>
    <el-divider content-position="left">组员工作</el-divider>
-   平均工作进度：<el-progress :percentage="70"></el-progress><br>
+   平均工作进度：<el-progress :percentage="averageProgress"></el-progress><br>
     <el-table
         :data="tableData"
         border
@@ -30,25 +30,25 @@
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="name"
             label="姓名">
         </el-table-column>
         <el-table-column
             width="400px"
-            prop="score"
+            prop="userTask"
             label="任务">
         <template slot-scope="scope">
             <el-row>
-                <el-col span="20">
+                <el-col :span="20">
                     <el-input
                     type="textarea"
                     :rows="2"
-                    placeholder="请输入任务要求"
-                    v-model="textarea">
+                    :placeholder="scope.row.userTask?scope.row.userTask:'请输入任务要求'"
+                    v-model="sendTask">
                     </el-input>
                 </el-col>
-                <el-col span="4" style="padding-left:10px;">
-                    <el-button type="primary" size="small">更新</el-button>
+                <el-col :span="4" style="padding-left:10px;">
+                    <el-button type="primary" size="small" @click="sendTaskHandle(scope.row.userId)">通知</el-button>
                 </el-col>
             </el-row>
         </template>
@@ -61,12 +61,12 @@
             <el-row>
                 <el-col span="20">
                     <el-slider
-                    v-model="value"
+                    v-model="staffProcess"
                     show-input>
                     </el-slider>
                 </el-col>
-                <el-col span="4" style="padding-left:10px;padding-right:10px;">
-                    <el-button type="primary" size="small">更新</el-button>
+                <el-col :span="4" style="padding-left:10px;padding-right:10px;">
+                    <el-button type="primary" size="small" @click="processChange(scope.row.userId)">更新</el-button>
                 </el-col>
             </el-row>
         </template>
@@ -76,29 +76,39 @@
         label="活动"
         >
             <template slot-scope="scope">
-                <el-button type="warning" size="small">打分</el-button>
+                <el-button type="warning" size="small" :disabled="performSysState==0?true:false" @click="scoreVisible=true;selectUser=scope.row.useId">打分</el-button>
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="评估绩效"
+            :visible.sync="scoreVisible"
+            width="30%">
+            请输入分数：<el-input v-model="newScore"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="scoreVisible = false">取 消</el-button>
+                <el-button type="primary" @click="changeScore">确 定</el-button>
+            </span>
+        </el-dialog>
     <br>
     <el-divider content-position="left">车辆状态</el-divider>
     <el-table
-        :data="tableData"
+        :data="carTable"
         border
         style="width: 100%">
         <el-table-column
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="carId"
             label="车辆编号">
         </el-table-column>
         <el-table-column
-            prop="score"
+            prop="num"
             label="车牌号">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="state"
         label="当前状态">
         </el-table-column>
         <el-table-column
@@ -106,37 +116,41 @@
         label="状态更新"
         >
             <template slot-scope="scope">
-                <el-button type="primary" size="small">工作中</el-button>
-                <el-button type="success" size="small">待工作</el-button>
-                <el-button type="warning" size="small">待维修</el-button>
+                <el-button type="primary" size="small" @click="carStateChange(scope.row.carId,'工作中')">工作中</el-button>
+                <el-button type="success" size="small" @click="carStateChange(scope.row.carId,'待工作')">待工作</el-button>
+                <el-button type="warning" size="small" @click="carStateChange(scope.row.carId,'待维修')">待维修</el-button>
             </template>
         </el-table-column>
         </el-table>
     <br>
     <el-divider content-position="left">工具状态</el-divider>
     <el-table
-        :data="tableData"
+        :data="toolTable"
         border
         style="width: 100%">
         <el-table-column
             type="index">
         </el-table-column>
         <el-table-column
-            prop="userName"
+            prop="toolId"
             label="工具编号">
         </el-table-column>
         <el-table-column
-        prop="reward"
+            prop="toolName"
+            label="工具名称">
+        </el-table-column>
+        <el-table-column
+        prop="state"
         label="当前状态">
         </el-table-column>
         <el-table-column
-        prop="reward"
+        prop="state"
         label="状态更新"
         >
             <template slot-scope="scope">
-                <el-button type="primary" size="small">工作中</el-button>
-                <el-button type="success" size="small">待工作</el-button>
-                <el-button type="warning" size="small">待维修</el-button>
+                <el-button type="primary" size="small" @click="toolStateChange(scope.row.toolId,'工作中')">工作中</el-button>
+                <el-button type="success" size="small" @click="toolStateChange(scope.row.toolId,'待工作')">待工作</el-button>
+                <el-button type="warning" size="small" @click="toolStateChange(scope.row.toolId,'待维修')">待维修</el-button>
             </template>
         </el-table-column>
         </el-table>
@@ -149,35 +163,147 @@ export default {
   name: 'Manager',
   data () {
     return {
-      tableData: [{
-        "userId": "123",
-        "userName":"贺妍",
-        "vote": 23
-      },
-      {
-        "userId": "321",
-        "userName":"小李",
-        "vote": 22
-      },
-      {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      },
-      {
-        "userId": "222",
-        "userName":"小张",
-        "vote": 20
-      }]
+        teamTaskTime: "--",
+        teamTask: "--",
+        borrowContent: "",
+        averageProgress: "--",
+        performSysState: 0,
+        scoreVisible: false,
+        selectUser:"",
+        newScore:0,
+        sendTask:"",
+        staffProcess:0,
+        tableData: [{
+            "userId": "123",
+            "userName":"贺妍",
+            "vote": 23
+        },
+        {
+            "userId": "321",
+            "userName":"小李",
+            "vote": 22
+        },
+        {
+            "userId": "222",
+            "userName":"小张",
+            "vote": 20
+        },
+        {
+            "userId": "222",
+            "userName":"小张",
+            "vote": 20
+        }],
+        carTable: [],
+        toolTable: []
     }
   },
+  created() {
+      this.axios.get(`${this.API}teamTask/${this.Cookies.get('userId')}`).
+      then(res=>{
+        if(res.data.code === 0) {
+            this.teamTask = res.data.data.content;
+            this.teamTaskTime = res.data.data.time;
+        }
+        else {
+            this.$message.error(res.data.message);
+        }
+      })
+      this.axios.get(`${this.API}performSysState`).
+      then(res=>{
+        this.performSysState = state;
+      });
+    //   this.axios.get(`${this.API}progress/${this.Cookies.get('userId')}`).
+    //   then(res=>{
+    //     if(res.data.code === 0) {
+    //         this.tableData = res.data.data;
+    //         this.averageProgress = res.data.averageProgress
+    //     }
+    //     else {
+    //         this.$message.error(res.data.message);
+    //     }
+    //   })
+        this.axios.get(`${this.API}select/tools/${this.Cookies.get('userId')}`).
+        then(res=>{
+            this.toolTable = res.data.data;
+        });
+        this.axios.get(`${this.API}select/cars/${this.Cookies.get('userId')}`).
+        then(res=>{
+            this.carTable = res.data.data;
+        });
+  },
   methods:{
-      tableRowClassName({row, rowIndex}) {
-        if (rowIndex < 3) {
-          return 'warning-row';
-        } 
-        return '';
+      borrowHandle() {
+          this.axios.post(`${this.API}needs`,{
+              teamId: this.Cookies.get('userId'),
+              applyContent: this.borrowContent
+          }).
+            then(res=>{
+                if(res.data.code == 0) {
+                    this.$message.success("发送借调信息成功！");
+                }
+                else {
+                    this.$message.error(res.data.message);
+                }
+            })
       },
+      sendTaskHandle(userId) {
+          this.axios.post(`${this.API}task`,{
+              userId: userId,
+              userTask: this.sendTask
+          }).
+            then(res=>{
+                if(res.data.code == 0) {
+                    this.$message.success("发送借调信息成功！");
+                }
+                else {
+                    this.$message.error(res.data.message);
+                }
+            })
+      },
+      changeScore() {
+          this.axios.get(`${this.API}perform?userId=${selectUser}&score=${newScore}`).
+            then(res=>{
+                if(res.data.code == 0) {
+                    this.$message.success("评分成功！");
+                }
+                else {
+                    this.$message.error(res.data.message);
+                }
+            })
+      },
+      carStateChange(carId,text) {
+          this.axios.get(`${this.API}update/cars?carId=${carId}&state=${text}`).
+            then(res=>{
+                if(res.data.code == 0) {
+                    this.$message.success("更新状态成功！");
+                }
+                else {
+                    this.$message.error(res.data.message);
+                }
+            })
+      },
+      toolStateChange(toolId, text) {
+          this.axios.get(`${this.API}update/tools?toolId=${toolId}&state=${text}`).
+            then(res=>{
+                if(res.data.code == 0) {
+                    this.$message.success("更新状态成功！");
+                }
+                else {
+                    this.$message.error(res.data.message);
+                }
+            })
+      },
+      processChange(userId) {
+          this.axios.get(`${this.API}progress?userId=${userId}&num=${staffProcess}`).
+            then(res=>{
+            if(res.data.code == 0) {
+                this.$message.success("更新进度成功！");
+            }
+            else {
+                this.$message.error(res.data.message);
+            }
+      })
+      }
   }
 }
 </script>
