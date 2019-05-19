@@ -39,10 +39,21 @@
         prop="reward"
         label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="small" @click="changeStaffVisible = true;changeOne = scope.row.userId">调配小组</el-button>
+                <el-button type="primary" size="small" @click="actHandle('changeStaffVisible',scope.row.userId)">调配小组</el-button>
+                <el-button type="warning" size="small" @click="actHandle('removeVisible',scope.row.userId)">移出小组</el-button>
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="将员工移出所在小组"
+            :visible.sync="removeVisible"
+            width="30%">
+            确定将该小组成员移出所在小组吗？
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="removeVisible = false">取 消</el-button>
+                <el-button type="primary" @click="removeHandle()">确 定</el-button>
+            </span>
+        </el-dialog>
         <el-dialog
             title="调配员工到小组"
             :visible.sync="changeStaffVisible"
@@ -50,7 +61,7 @@
             请输入目标小组编号：<el-input v-model="toTeam"></el-input>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="changeStaffVisible = false">取 消</el-button>
-                <el-button type="primary" @click="changeStaff(changeOne)">确 定</el-button>
+                <el-button type="primary" @click="changeStaff()">确 定</el-button>
             </span>
         </el-dialog>
     <br>
@@ -106,10 +117,21 @@
         label="操作">
             <template slot-scope="scope">
                 <el-button type="primary" size="small" @click="actHandle('taskVisible',scope.row.teamId)">分配任务</el-button>
-                <el-button type="success" size="small" @click="actHandle('scoreVisible',scope.row.teamId)" :disabled="performSysState==0">打分</el-button>                
+                <el-button type="success" size="small" @click="actHandle('scoreVisible',scope.row.teamId)" :disabled="performSysState==0">打分</el-button>
+                <el-button type="warning" size="small" @click="actHandle('deleteVisible',scope.row.teamId)" :disabled="performSysState==0">解散</el-button>          
             </template>
         </el-table-column>
         </el-table>
+        <el-dialog
+            title="解散小组"
+            :visible.sync="deleteVisible"
+            width="30%">
+            确定要解散该小组吗？
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="deleteVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteHandle">确 定</el-button>
+            </span>
+        </el-dialog>
         <el-dialog
             title="分配小组任务"
             :visible.sync="taskVisible"
@@ -300,6 +322,8 @@ export default {
         changeCarVisible:false,
         newToolVisible: false,
         changeToolVisible: false,
+        deleteVisible: false,
+        removeVisible: false,
         newToolName: "",
         carToTeam:"",
         toolToTeam:"",
@@ -374,8 +398,8 @@ export default {
                 }
             })
       },
-      changeStaff(index) {
-          this.axios.put(`${this.API}changeTeam?userId=${index}&teamId=${this.toTeam}`).
+      changeStaff() {
+          this.axios.put(`${this.API}changeTeam?userId=${this.selectTeam}&teamId=${this.toTeam}`).
             then(res=>{
                 if(res.data.code === 0) {
                     this.$message.success("调配成功！");
@@ -484,6 +508,24 @@ export default {
           this[visible]=true;
           this.selectTeam=teamId;
       },
+      deleteHandle() {
+          this.axios.get(`${this.API}deleteGroup?teamId=${this.selectTeam}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("解散成功！");
+                    // location.reload();
+                }
+            })
+      },
+      removeHandle() {
+          this.axios.get(`${this.API}deleteUser?userId=${this.selectTeam}`).
+            then(res=>{
+                if(res.data.code === 0) {
+                    this.$message.success("移出成功！");
+                    // location.reload();
+                }
+            })
+      }
 
   }
 }
