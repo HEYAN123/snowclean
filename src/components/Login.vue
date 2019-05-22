@@ -150,10 +150,8 @@ export default {
       this.axios.post(`${this.API}signin`,this.ruleForm).
       then(res=>{
         if(res.data.code === 0) {
-            this.$Message.success('注册成功！');
-            this.$router.push({
-                path: '/'
-            })
+            this.$message.success('注册成功！');
+            this.dialogVisible = false;
         }
         else {
             this.$message.error(res.data.message);
